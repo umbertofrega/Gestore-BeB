@@ -1,4 +1,4 @@
-package com.piattaforme.gestorebeb.entities;
+package com.piattaforme.gestorebeb.model.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -8,9 +8,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-@Table(name="admins")
-public class Admin extends User{
-
-    @Column(name="role")
-    private String role;
+@Table(name="guests")
+public class Guest extends User {
 }

@@ -1,4 +1,4 @@
-package com.piattaforme.gestorebeb.entities;
+package com.piattaforme.gestorebeb.model.entities;
 
 
 import jakarta.persistence.*;
