@@ -1,6 +1,7 @@
 package com.piattaforme.gestorebeb.model.entities;
 
 
+import com.piattaforme.gestorebeb.model.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -36,6 +37,10 @@ public class Reservation {
 
     @Column(name="price")
     private double price;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="payment_status")
+    private PaymentStatus paymentStatus;
 
     @Column(name="created_at")
     private LocalDate createdAt;

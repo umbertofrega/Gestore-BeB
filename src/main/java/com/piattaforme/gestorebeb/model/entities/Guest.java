@@ -9,6 +9,5 @@ import lombok.EqualsAndHashCode;
 @Data
 @Entity
 @Table(name="guests")
-@Inheritance(strategy = InheritanceType.JOINED)
 public class Guest extends User {
 }
