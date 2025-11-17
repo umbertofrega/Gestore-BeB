@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @Entity
 @Table(name="admins")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Admin extends User{
 
     @Column(name="role")
