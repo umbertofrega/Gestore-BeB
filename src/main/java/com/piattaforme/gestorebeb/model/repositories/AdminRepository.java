@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface AdminRepository extends JpaRepository<Admin,Integer> {
     List<Admin> findAdminByEmail(String email);
+    boolean existsByEmail(String email);
 }
