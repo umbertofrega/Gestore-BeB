@@ -18,9 +18,9 @@ public class UserService {
 
     @Transactional
     public User registerUser(User user) {
-        if(userRepository.existsByEmail(user.getEmail()))
-            throw new IllegalArgumentException("User already exists");
-        return userRepository.save(user);
+        if(user!=null && !userRepository.existsByEmail(user.getEmail()))
+            return userRepository.save(user);
+        throw new IllegalArgumentException("User already exists");
     }
 
 }
