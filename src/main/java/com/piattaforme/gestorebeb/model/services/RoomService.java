@@ -3,8 +3,8 @@ package com.piattaforme.gestorebeb.model.services;
 import com.piattaforme.gestorebeb.model.entities.Room;
 import com.piattaforme.gestorebeb.model.enums.RoomState;
 import com.piattaforme.gestorebeb.model.repositories.RoomRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RoomService {
@@ -48,5 +48,4 @@ public class RoomService {
             throw new IllegalArgumentException("Room number not found");
         }
     }
-
 }
