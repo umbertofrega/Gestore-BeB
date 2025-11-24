@@ -35,4 +35,9 @@ public class RoomController {
     public Room changeState(@PathVariable("room_number") int roomNumber, @RequestBody RoomState newState) {
         return roomService.changeState(roomNumber,newState);
     }
+
+    @DeleteMapping(value = "/{room_number}/delete")
+    public Room deleteRoom(@PathVariable("room_number") int roomNumber) {
+        return roomService.deleteRoom(roomNumber);
+    }
 }

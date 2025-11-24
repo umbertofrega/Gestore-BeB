@@ -34,10 +34,9 @@ public class RoomService {
     }
 
     @Transactional
-    public void deleteRoom(int roomNumber) {
+    public Room deleteRoom(int roomNumber) {
         if(roomRepository.existsRoomByNumber(roomNumber)) {
-            roomRepository.deleteByNumber(roomNumber);
-            return;
+            return roomRepository.deleteByNumber(roomNumber);
         }
         throw new RoomNotFoundException("Maybe the Room does not exist");
     }
