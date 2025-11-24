@@ -2,8 +2,8 @@ package com.piattaforme.gestorebeb.model.services;
 
 import com.piattaforme.gestorebeb.model.entities.Room;
 import com.piattaforme.gestorebeb.model.enums.RoomState;
-import com.piattaforme.gestorebeb.model.exeptions.RoomAlredyExistsException;
-import com.piattaforme.gestorebeb.model.exeptions.RoomNotFoundException;
+import com.piattaforme.gestorebeb.model.exceptions.RoomAlreadyExistsException;
+import com.piattaforme.gestorebeb.model.exceptions.RoomNotFoundException;
 import com.piattaforme.gestorebeb.model.repositories.AdminRepository;
 import com.piattaforme.gestorebeb.model.repositories.RoomRepository;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class RoomService {
         //TODO:check on admin
         if(room!=null && !roomRepository.existsRoomByNumber(room.getNumber()))
             return roomRepository.save(room);
-        throw new RoomAlredyExistsException("The room alredy exists");
+        throw new RoomAlreadyExistsException("The room alredy exists");
     }
 
     @Transactional
@@ -35,8 +35,10 @@ public class RoomService {
 
     @Transactional
     public void deleteRoom(int roomNumber) {
-        if(roomRepository.existsRoomByNumber(roomNumber))
+        if(roomRepository.existsRoomByNumber(roomNumber)) {
             roomRepository.deleteByNumber(roomNumber);
+            return;
+        }
         throw new RoomNotFoundException("Maybe the Room does not exist");
     }
 
