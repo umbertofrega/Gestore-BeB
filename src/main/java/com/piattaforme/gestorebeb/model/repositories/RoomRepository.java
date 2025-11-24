@@ -5,4 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RoomRepository extends JpaRepository<Room,Integer> {
 
+    boolean existsRoomByNumber(int number);
+    void deleteByNumber(Integer number);
+    Room getRoomByNumber(int number);
 }
