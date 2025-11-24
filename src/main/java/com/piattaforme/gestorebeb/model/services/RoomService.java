@@ -9,6 +9,8 @@ import com.piattaforme.gestorebeb.model.repositories.RoomRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class RoomService {
 
@@ -60,5 +62,10 @@ public class RoomService {
         if (room == null)
             throw new RoomNotFoundException("Maybe the Room does not exist");
         return room;
+    }
+    
+    @Transactional(readOnly = true)
+    public List<Room> getAll() {
+        return roomRepository.findAll();
     }
 }

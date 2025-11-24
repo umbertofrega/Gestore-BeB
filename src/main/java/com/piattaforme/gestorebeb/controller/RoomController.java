@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/room")
 public class RoomController {
@@ -26,6 +28,11 @@ public class RoomController {
         }
     }
 
+    @GetMapping
+    public List<Room> getAllRooms(){
+        return roomService.getAll();
+    }
+
     @PostMapping(value = "/addRoom")
     public Room addRoom(@RequestBody Room newRoom) {
         return roomService.addRoom(newRoom);
@@ -34,6 +41,11 @@ public class RoomController {
     @PutMapping(value = "/{room_number}/updateState")
     public Room changeState(@PathVariable("room_number") int roomNumber, @RequestBody RoomState newState) {
         return roomService.changeState(roomNumber,newState);
+    }
+
+    @PutMapping(value = "/{room_number}/updateRoom")
+    public Room changeRoom(@PathVariable("room_number") int roomNumber, @RequestBody Room newRoom) {
+        return roomService.updateRoom(roomNumber,newRoom);
     }
 
     @DeleteMapping(value = "/{room_number}/delete")
