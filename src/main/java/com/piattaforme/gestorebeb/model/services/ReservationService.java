@@ -65,5 +65,9 @@ public class ReservationService {
         return false;
     }
 
+    @Transactional
+    public void deleteReservation(int reservationId){
+        reservationRepository.deleteById(reservationId);
+    }
 
 }

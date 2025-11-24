@@ -31,11 +31,16 @@ public class ReservationController {
     @PostMapping("/addReservation")
     public ResponseEntity<?> addReservation(@RequestBody Reservation newReservation){
         try{
-             reservationService.reserveRoom(newReservation);
-             return new ResponseEntity<>(newReservation, HttpStatus.CREATED);
-        } catch(RoomOccupiedException e){
+            reservationService.reserveRoom(newReservation);
+            return new ResponseEntity<>(newReservation, HttpStatus.CREATED);
+        } catch(RoomOccupiedException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Camera già occupata");
         }
+    }
+    @DeleteMapping("/{reservationId}")
+    public ResponseEntity<?> deleteReservation(@PathVariable int reservationId){
+        reservationService.deleteReservation(reservationId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }
