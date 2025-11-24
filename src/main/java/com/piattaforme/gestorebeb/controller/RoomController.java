@@ -4,6 +4,7 @@ import com.piattaforme.gestorebeb.model.entities.Room;
 import com.piattaforme.gestorebeb.model.enums.RoomState;
 import com.piattaforme.gestorebeb.model.services.RoomService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -20,9 +21,9 @@ public class RoomController {
     }
 
     @GetMapping(value = "/{room_number}")
-    public Room getRoomData(@PathVariable("room_number") int roomNumber) {
+    public ResponseEntity<?> getRoomData(@PathVariable("room_number") int roomNumber) {
         try {
-            return roomService.getRoomByNumber(roomNumber);
+            return new ResponseEntity<>(roomService.getRoomByNumber(roomNumber),HttpStatus.FOUND);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Camera non trovata");
         }
@@ -34,22 +35,26 @@ public class RoomController {
     }
 
     @PostMapping(value = "/addRoom")
-    public Room addRoom(@RequestBody Room newRoom) {
-        return roomService.addRoom(newRoom);
+    public ResponseEntity<?> addRoom(@RequestBody Room newRoom) {
+        roomService.addRoom(newRoom);
+        return new ResponseEntity<>(newRoom, HttpStatus.CREATED);
     }
 
     @PutMapping(value = "/{room_number}/updateState")
-    public Room changeState(@PathVariable("room_number") int roomNumber, @RequestBody RoomState newState) {
-        return roomService.changeState(roomNumber,newState);
+    public ResponseEntity<?> changeState(@PathVariable("room_number") int roomNumber, @RequestBody RoomState newState) {
+        Room newRoom = roomService.changeState(roomNumber,newState);
+        return new ResponseEntity<>(newRoom, HttpStatus.OK);
     }
 
     @PutMapping(value = "/{room_number}/updateRoom")
-    public Room changeRoom(@PathVariable("room_number") int roomNumber, @RequestBody Room newRoom) {
-        return roomService.updateRoom(roomNumber,newRoom);
+    public ResponseEntity<?> changeRoom(@PathVariable("room_number") int roomNumber, @RequestBody Room newRoom) {
+        roomService.updateRoom(roomNumber,newRoom);
+        return new ResponseEntity<>(newRoom, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/{room_number}/delete")
-    public Room deleteRoom(@PathVariable("room_number") int roomNumber) {
-        return roomService.deleteRoom(roomNumber);
+    public ResponseEntity<?> deleteRoom(@PathVariable("room_number") int roomNumber) {
+        Room deletedRoom = roomService.deleteRoom(roomNumber);
+        return new ResponseEntity<>(deletedRoom, HttpStatus.NO_CONTENT);
     }
 }
