@@ -1,7 +1,10 @@
 package com.piattaforme.gestorebeb.controller;
 
 import com.piattaforme.gestorebeb.model.entities.Reservation;
+import com.piattaforme.gestorebeb.model.enums.PaymentStatus;
+import com.piattaforme.gestorebeb.model.exceptions.ReservationCancellationDeadlineException;
 import com.piattaforme.gestorebeb.model.exceptions.ReservationNotFoundException;
+import com.piattaforme.gestorebeb.model.exceptions.RoomNotFoundException;
 import com.piattaforme.gestorebeb.model.exceptions.RoomOccupiedException;
 import com.piattaforme.gestorebeb.model.services.ReservationService;
 import org.springframework.http.HttpStatus;
@@ -10,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
+@RequestMapping("/reservation")
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -18,29 +22,58 @@ public class ReservationController {
         this.reservationService=reservationService;
     }
 
-    @GetMapping("/{reservationId}")
-    public ResponseEntity<?> getReservation(@PathVariable int reservationId){
-        try {
-           Reservation reservation = reservationService.findById(reservationId);
-            return new ResponseEntity<>(reservation, HttpStatus.FOUND);
-        } catch (ReservationNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Prenotazione non trovata");
-        }
-    }
-
+    //Create
     @PostMapping("/addReservation")
     public ResponseEntity<?> addReservation(@RequestBody Reservation newReservation){
         try{
-            reservationService.reserveRoom(newReservation);
-            return new ResponseEntity<>(newReservation, HttpStatus.CREATED);
+            Reservation reservation = reservationService.reserveRoom(newReservation);
+            return new ResponseEntity<>(reservation, HttpStatus.CREATED);
         } catch(RoomOccupiedException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Camera già occupata");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "The room is already full");
         }
     }
+
+    //Read
+    @GetMapping
+    public ResponseEntity<?> getAllReservations(){
+        return new ResponseEntity<>(reservationService.getAll(), HttpStatus.FOUND);
+    }
+
+    @GetMapping("/{reservationId}")
+    public ResponseEntity<?> getReservation(@PathVariable int reservationId){
+        Reservation reservation;
+        try {
+           reservation = reservationService.findById(reservationId);
+        } catch (ReservationNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found");
+        }
+        return new ResponseEntity<>(reservation, HttpStatus.FOUND);
+    }
+
+    //Update
+    @PutMapping("/{reservationId}")
+    public ResponseEntity<?> changeStatus(@PathVariable int reservationId, PaymentStatus status){
+        Reservation reservation;
+        try {
+            reservation = reservationService.changePaymentStatus(reservationId,status);
+        } catch (ReservationNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found");
+        }
+        return new ResponseEntity<>(reservation, HttpStatus.OK);
+    }
+
+    //Delete
     @DeleteMapping("/{reservationId}")
-    public ResponseEntity<?> deleteReservation(@PathVariable int reservationId){
-        reservationService.deleteReservation(reservationId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<?> deleteReservation(@PathVariable int reservationId) {
+        Reservation reservation;
+        try {
+            reservation = reservationService.deleteReservation(reservationId);
+        } catch (RoomNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found");
+        } catch (ReservationCancellationDeadlineException t){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The time to revoke the reservation is finished");
+        }
+        return new ResponseEntity<>(reservation, HttpStatus.NO_CONTENT);
     }
 
 }

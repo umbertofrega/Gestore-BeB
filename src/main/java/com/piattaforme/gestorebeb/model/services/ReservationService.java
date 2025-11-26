@@ -2,6 +2,8 @@ package com.piattaforme.gestorebeb.model.services;
 
 
 import com.piattaforme.gestorebeb.model.entities.Reservation;
+import com.piattaforme.gestorebeb.model.enums.PaymentStatus;
+import com.piattaforme.gestorebeb.model.exceptions.ReservationCancellationDeadlineException;
 import com.piattaforme.gestorebeb.model.exceptions.ReservationNotFoundException;
 import com.piattaforme.gestorebeb.model.exceptions.RoomOccupiedException;
 import com.piattaforme.gestorebeb.model.repositories.ReservationRepository;
@@ -29,13 +31,13 @@ public class ReservationService {
     public Reservation findById(int id) {
         Reservation newReservation = reservationRepository.getById(id);
         if(newReservation == null) {
-            throw new ReservationNotFoundException("Maybe the reservation doesn't exist");
+            throw new ReservationNotFoundException("The reservation doesn't exist");
         }
         return newReservation;
     }
 
     @Transactional
-    public Reservation reserveRoom(Reservation newReservation) throws RoomOccupiedException {
+    public Reservation reserveRoom(Reservation newReservation) {
         if(newReservation.getRoom() == null)
             throw new IllegalArgumentException("Room is null");
 
@@ -44,7 +46,7 @@ public class ReservationService {
         return reservationRepository.save(newReservation);
     }
 
-    private  boolean isRoomOccupied(Reservation newReservation) {
+    private boolean isRoomOccupied(Reservation newReservation) {
         LocalDate newCheckIn = newReservation.getCheckin();
         LocalDate newCheckOut = newReservation.getCheckout();
 
@@ -66,8 +68,28 @@ public class ReservationService {
     }
 
     @Transactional
-    public void deleteReservation(int reservationId){
-        reservationRepository.deleteById(reservationId);
+    public Reservation changePaymentStatus(int reservationId, PaymentStatus status){
+        if(reservationRepository.existsById(reservationId)){
+            Reservation res = reservationRepository.getById(reservationId);
+            res.setPaymentStatus(status);
+            return res;
+        }
+        throw new ReservationNotFoundException("The reservation doesn't exist");
+    }
+
+    @Transactional
+    public Reservation deleteReservation(int reservationId){
+
+        if(reservationRepository.existsById(reservationId)) {
+            Reservation reservation = reservationRepository.getById(reservationId);
+            LocalDate deadline = reservation.getCheckin().minusWeeks(1);
+
+            if(LocalDate.now().isAfter(deadline))
+                throw new ReservationCancellationDeadlineException("The time has passed");
+
+            return reservationRepository.deleteById(reservationId);
+        }
+        else throw new ReservationNotFoundException("The reservation doesn't exist");
     }
 
 }
