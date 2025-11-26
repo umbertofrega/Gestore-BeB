@@ -2,6 +2,7 @@ package com.piattaforme.gestorebeb.model.services;
 
 import com.piattaforme.gestorebeb.model.entities.Room;
 import com.piattaforme.gestorebeb.model.enums.RoomState;
+import com.piattaforme.gestorebeb.model.enums.RoomType;
 import com.piattaforme.gestorebeb.model.exceptions.RoomAlreadyExistsException;
 import com.piattaforme.gestorebeb.model.exceptions.RoomMismatchException;
 import com.piattaforme.gestorebeb.model.exceptions.RoomNotDeletableException;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,7 +26,6 @@ public class RoomService {
 
     @Transactional
     public Room addRoom(Room room) {
-        //TODO:check on admin
         if (room != null && !roomRepository.existsRoomByNumber(room.getNumber()))
             return roomRepository.save(room);
         throw new RoomAlreadyExistsException("The room alredy exists");
@@ -82,12 +83,18 @@ public class RoomService {
         return room;
     }
 
-    public List<Room> getAvaliable(LocalDate checkIn, LocalDate checkOut) {
-        return roomRepository.getAvaliable(checkIn, checkOut);
-    }
-
     @Transactional(readOnly = true)
     public List<Room> getAll() {
         return roomRepository.findAll();
+    }
+
+    public List<Room> searchRoomsAdvanced(LocalDate checkIn, LocalDate checkOut, List<RoomType> types, double maxPrice, int minSize) {
+        List<Room> avaliableRooms = roomRepository.getAvaliable(checkIn,checkOut);
+        List<Room> result = new ArrayList<>();
+        for(Room r: avaliableRooms) {
+           if(types.contains(r.getType()) && r.getSize()>minSize && r.getPrice() < maxPrice)
+               result.add(r);
+        }
+        return result;
     }
 }
