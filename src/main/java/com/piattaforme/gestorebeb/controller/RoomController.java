@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -20,12 +21,20 @@ public class RoomController {
         this.roomService = roomService;
     }
 
+    //Create
+    @PostMapping(value = "/addRoom")
+    public ResponseEntity<?> addRoom(@RequestBody Room newRoom) {
+        roomService.addRoom(newRoom);
+        return new ResponseEntity<>(newRoom, HttpStatus.CREATED);
+    }
+
+    //Read
     @GetMapping(value = "/{room_number}")
     public ResponseEntity<?> getRoomData(@PathVariable("room_number") int roomNumber) {
         try {
             return new ResponseEntity<>(roomService.getRoomByNumber(roomNumber),HttpStatus.FOUND);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Camera non trovata");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found");
         }
     }
 
@@ -34,10 +43,24 @@ public class RoomController {
         return roomService.getAll();
     }
 
-    @PostMapping(value = "/addRoom")
-    public ResponseEntity<?> addRoom(@RequestBody Room newRoom) {
-        roomService.addRoom(newRoom);
-        return new ResponseEntity<>(newRoom, HttpStatus.CREATED);
+    @GetMapping
+    public ResponseEntity<?> getAvaliableRooms(LocalDate checkin, LocalDate checkout) {
+        List<Room> rooms = roomService.getAvaliable(checkin, checkout);
+        if (rooms == null || rooms.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There are no avaliable rooms");
+        return new ResponseEntity<>(rooms, HttpStatus.FOUND);
+    }
+
+    //Update
+    @PutMapping(value = "/{room_number}/updateRoom")
+    public ResponseEntity<?> changeRoom(@PathVariable("room_number") int roomNumber, @RequestBody Room newRoom) {
+        Room room;
+        try {
+            room = roomService.updateRoom(roomNumber,newRoom);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return new ResponseEntity<>(room, HttpStatus.OK);
     }
 
     @PutMapping(value = "/{room_number}/updateState")
@@ -46,15 +69,15 @@ public class RoomController {
         return new ResponseEntity<>(newRoom, HttpStatus.OK);
     }
 
-    @PutMapping(value = "/{room_number}/updateRoom")
-    public ResponseEntity<?> changeRoom(@PathVariable("room_number") int roomNumber, @RequestBody Room newRoom) {
-        roomService.updateRoom(roomNumber,newRoom);
-        return new ResponseEntity<>(newRoom, HttpStatus.OK);
-    }
-
+    //Delete
     @DeleteMapping(value = "/{room_number}/delete")
     public ResponseEntity<?> deleteRoom(@PathVariable("room_number") int roomNumber) {
-        Room deletedRoom = roomService.deleteRoom(roomNumber);
+        Room deletedRoom;
+        try {
+            deletedRoom = roomService.deleteRoom(roomNumber);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found");
+        }
         return new ResponseEntity<>(deletedRoom, HttpStatus.NO_CONTENT);
     }
 }
