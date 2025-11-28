@@ -65,6 +65,7 @@ public class RoomController {
         }
         return ResponseEntity.ok(rooms);
     }
+
     //Update
     @PutMapping(value = "/{room_number}")
     public ResponseEntity<?> changeRoom(@PathVariable("room_number") int roomNumber, @RequestBody Room newRoom) {
