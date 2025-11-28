@@ -54,8 +54,8 @@ public class RoomController {
     public ResponseEntity<List<Room>> searchRooms(
             @RequestParam("checkin") LocalDate checkIn,
             @RequestParam("checkout") LocalDate checkOut,
-            @RequestParam(value = "type", required = false) List<RoomType> types,
-            @RequestParam(value = "maxPrice", required = false, defaultValue = "0") double maxPrice,
+            @RequestParam(value = "type", required = false, defaultValue = "SINGLE") List<RoomType> types,
+            @RequestParam(value = "maxPrice", required = false, defaultValue = "300") double maxPrice,
             @RequestParam(value = "minSize", required = false, defaultValue = "0") int minSize
     ) {
         List<Room> rooms = roomService.searchRoomsAdvanced(checkIn, checkOut, types, maxPrice, minSize);
