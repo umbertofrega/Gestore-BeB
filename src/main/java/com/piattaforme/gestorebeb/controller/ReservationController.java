@@ -9,6 +9,7 @@ import com.piattaforme.gestorebeb.model.exceptions.RoomOccupiedException;
 import com.piattaforme.gestorebeb.model.services.ReservationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -34,6 +35,7 @@ public class ReservationController {
     }
 
     //Read
+    @PreAuthorize("hasRole('Admin')")
     @GetMapping
     public ResponseEntity<?> getAllReservations(){
         return new ResponseEntity<>(reservationService.getAll(), HttpStatus.OK);
@@ -51,6 +53,7 @@ public class ReservationController {
     }
 
     //Update
+    @PreAuthorize("hasRole('Admin')")
     @PutMapping("/{reservationId}")
     public ResponseEntity<?> changeStatus(@PathVariable int reservationId, PaymentStatus status){
         Reservation reservation;
@@ -63,6 +66,7 @@ public class ReservationController {
     }
 
     //Delete
+    @PreAuthorize("hasRole('Admin')")
     @DeleteMapping("/{reservationId}")
     public ResponseEntity<?> deleteReservation(@PathVariable int reservationId) {
         Reservation reservation;

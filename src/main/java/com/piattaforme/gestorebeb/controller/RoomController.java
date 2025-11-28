@@ -7,6 +7,7 @@ import com.piattaforme.gestorebeb.model.exceptions.RoomAlreadyExistsException;
 import com.piattaforme.gestorebeb.model.services.RoomService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -24,6 +25,7 @@ public class RoomController {
     }
 
     //Create
+    @PreAuthorize("hasRole('Admin')")
     @PostMapping
     public ResponseEntity<?> addRoom(@RequestBody Room newRoom) {
         Room addedRoom;
@@ -67,6 +69,7 @@ public class RoomController {
     }
 
     //Update
+    @PreAuthorize("hasRole('Admin')")
     @PutMapping(value = "/{room_number}")
     public ResponseEntity<?> changeRoom(@PathVariable("room_number") int roomNumber, @RequestBody Room newRoom) {
         Room room;
@@ -78,6 +81,7 @@ public class RoomController {
         return new ResponseEntity<>(room, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('Admin')")
     @PutMapping(value = "/{room_number}/state")
     public ResponseEntity<?> changeState(@PathVariable("room_number") int roomNumber, @RequestBody RoomState newState) {
         Room newRoom = roomService.changeState(roomNumber,newState);
@@ -85,6 +89,7 @@ public class RoomController {
     }
 
     //Delete
+    @PreAuthorize("hasRole('Admin')")
     @DeleteMapping(value = "/{room_number}")
     public ResponseEntity<?> deleteRoom(@PathVariable("room_number") int roomNumber) {
         Room deletedRoom;
