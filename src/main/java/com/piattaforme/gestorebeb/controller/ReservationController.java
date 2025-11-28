@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@RequestMapping("/reservation")
+@RequestMapping("/api/reservations")
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -23,20 +23,20 @@ public class ReservationController {
     }
 
     //Create
-    @PostMapping("/addReservation")
+    @PostMapping
     public ResponseEntity<?> addReservation(@RequestBody Reservation newReservation){
         try{
             Reservation reservation = reservationService.reserveRoom(newReservation);
             return new ResponseEntity<>(reservation, HttpStatus.CREATED);
         } catch(RoomOccupiedException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "The room is already full");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "The room is reserved");
         }
     }
 
     //Read
     @GetMapping
     public ResponseEntity<?> getAllReservations(){
-        return new ResponseEntity<>(reservationService.getAll(), HttpStatus.FOUND);
+        return new ResponseEntity<>(reservationService.getAll(), HttpStatus.OK);
     }
 
     @GetMapping("/{reservationId}")
@@ -47,7 +47,7 @@ public class ReservationController {
         } catch (ReservationNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found");
         }
-        return new ResponseEntity<>(reservation, HttpStatus.FOUND);
+        return new ResponseEntity<>(reservation, HttpStatus.OK);
     }
 
     //Update
@@ -71,9 +71,9 @@ public class ReservationController {
         } catch (RoomNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found");
         } catch (ReservationCancellationDeadlineException t){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The time to revoke the reservation is finished");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The time to revoke the reservation has finished");
         }
-        return new ResponseEntity<>(reservation, HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(reservation, HttpStatus.OK);
     }
 
 }
