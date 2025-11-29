@@ -3,7 +3,7 @@ package com.piattaforme.gestorebeb.controller;
 import com.piattaforme.gestorebeb.model.entities.Room;
 import com.piattaforme.gestorebeb.model.enums.RoomState;
 import com.piattaforme.gestorebeb.model.enums.RoomType;
-import com.piattaforme.gestorebeb.model.exceptions.RoomAlreadyExistsException;
+import com.piattaforme.gestorebeb.model.exceptions.conflict.RoomAlreadyExistsException;
 import com.piattaforme.gestorebeb.model.services.RoomService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
