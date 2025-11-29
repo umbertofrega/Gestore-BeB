@@ -1,4 +1,4 @@
-package com.piattaforme.gestorebeb.model.exceptions;
+package com.piattaforme.gestorebeb.model.exceptions.conflict;
 
 public class RoomMismatchException extends RuntimeException {
     public RoomMismatchException(String message) {
