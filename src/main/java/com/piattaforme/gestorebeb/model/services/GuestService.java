@@ -1,6 +1,7 @@
 package com.piattaforme.gestorebeb.model.services;
 
 import com.piattaforme.gestorebeb.model.entities.Guest;
+import com.piattaforme.gestorebeb.model.exceptions.conflict.EmailAlreadyExists;
 import com.piattaforme.gestorebeb.model.repositories.GuestRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +22,7 @@ public class GuestService {
         if(guest!=null && !guestRepository.existsByEmail(guest.getEmail()))
             return guestRepository.save(guest);
 
-        throw new IllegalArgumentException("Guest already exists");
+        throw new EmailAlreadyExists("Guest already exists");
     }
 
     @Transactional(readOnly = true)

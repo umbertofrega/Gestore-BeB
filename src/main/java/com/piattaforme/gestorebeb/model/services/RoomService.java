@@ -3,10 +3,10 @@ package com.piattaforme.gestorebeb.model.services;
 import com.piattaforme.gestorebeb.model.entities.Room;
 import com.piattaforme.gestorebeb.model.enums.RoomState;
 import com.piattaforme.gestorebeb.model.enums.RoomType;
-import com.piattaforme.gestorebeb.model.exceptions.RoomAlreadyExistsException;
-import com.piattaforme.gestorebeb.model.exceptions.RoomMismatchException;
-import com.piattaforme.gestorebeb.model.exceptions.RoomNotDeletableException;
-import com.piattaforme.gestorebeb.model.exceptions.RoomNotFoundException;
+import com.piattaforme.gestorebeb.model.exceptions.conflict.RoomAlreadyExistsException;
+import com.piattaforme.gestorebeb.model.exceptions.conflict.RoomMismatchException;
+import com.piattaforme.gestorebeb.model.exceptions.forbidden.RoomNotDeletableException;
+import com.piattaforme.gestorebeb.model.exceptions.notFound.RoomNotFoundException;
 import com.piattaforme.gestorebeb.model.repositories.RoomRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,8 +35,7 @@ public class RoomService {
     public Room updateRoom(int roomNumber, Room room) {
         if (room == null) throw new IllegalArgumentException();
         if (room.getNumber() != roomNumber) {
-            if(roomRepository.existsRoomByNumber(room.getNumber()))
-                throw new RoomMismatchException("Room ID mismatch: Cannot update Room because the number in the request body already exists");
+            throw new RoomMismatchException("Room ID mismatch, you cant change the room number");
         }
         if (roomRepository.existsRoomByNumber(roomNumber))
             return roomRepository.save(room);

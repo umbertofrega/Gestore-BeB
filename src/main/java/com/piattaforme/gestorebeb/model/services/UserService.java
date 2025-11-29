@@ -1,7 +1,7 @@
 package com.piattaforme.gestorebeb.model.services;
 
 import com.piattaforme.gestorebeb.model.entities.User;
-import com.piattaforme.gestorebeb.model.exceptions.UsedEmailException;
+import com.piattaforme.gestorebeb.model.exceptions.conflict.EmailAlreadyExists;
 import com.piattaforme.gestorebeb.model.repositories.UserRepository;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.core.Authentication;
@@ -25,7 +25,7 @@ public class UserService {
     public User registerUser(User user) {
         if(user!=null && !userRepository.existsByEmail(user.getEmail()))
             return userRepository.save(user);
-        throw new UsedEmailException("User already exists");
+        throw new EmailAlreadyExists("User already exists");
     }
 
     @Transactional
