@@ -24,6 +24,7 @@ public class ReservationController {
     }
 
     //Create
+    @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @PostMapping
     public ResponseEntity<?> addReservation(@RequestBody Reservation newReservation){
         try{
@@ -35,7 +36,6 @@ public class ReservationController {
     }
 
     //Read
-    @PreAuthorize("hasRole('Admin')")
     @GetMapping
     public ResponseEntity<?> getAllReservations(){
         return new ResponseEntity<>(reservationService.getAll(), HttpStatus.OK);
@@ -53,7 +53,7 @@ public class ReservationController {
     }
 
     //Update
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @PutMapping("/{reservationId}")
     public ResponseEntity<?> changeStatus(@PathVariable int reservationId, PaymentStatus status){
         Reservation reservation;
@@ -66,7 +66,7 @@ public class ReservationController {
     }
 
     //Delete
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @DeleteMapping("/{reservationId}")
     public ResponseEntity<?> deleteReservation(@PathVariable int reservationId) {
         Reservation reservation;

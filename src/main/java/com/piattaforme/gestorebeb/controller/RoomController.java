@@ -25,7 +25,7 @@ public class RoomController {
     }
 
     //Create
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @PostMapping
     public ResponseEntity<?> addRoom(@RequestBody Room newRoom) {
         Room addedRoom;
@@ -69,7 +69,7 @@ public class RoomController {
     }
 
     //Update
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @PutMapping(value = "/{room_number}")
     public ResponseEntity<?> changeRoom(@PathVariable("room_number") int roomNumber, @RequestBody Room newRoom) {
         Room room;
@@ -81,7 +81,7 @@ public class RoomController {
         return new ResponseEntity<>(room, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @PutMapping(value = "/{room_number}/state")
     public ResponseEntity<?> changeState(@PathVariable("room_number") int roomNumber, @RequestBody RoomState newState) {
         Room newRoom = roomService.changeState(roomNumber,newState);
@@ -89,7 +89,7 @@ public class RoomController {
     }
 
     //Delete
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @DeleteMapping(value = "/{room_number}")
     public ResponseEntity<?> deleteRoom(@PathVariable("room_number") int roomNumber) {
         Room deletedRoom;
