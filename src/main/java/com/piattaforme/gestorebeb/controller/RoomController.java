@@ -3,10 +3,11 @@ package com.piattaforme.gestorebeb.controller;
 import com.piattaforme.gestorebeb.model.entities.Room;
 import com.piattaforme.gestorebeb.model.enums.RoomState;
 import com.piattaforme.gestorebeb.model.enums.RoomType;
-import com.piattaforme.gestorebeb.model.exceptions.RoomAlreadyExistsException;
+import com.piattaforme.gestorebeb.model.exceptions.conflict.RoomAlreadyExistsException;
 import com.piattaforme.gestorebeb.model.services.RoomService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -24,6 +25,7 @@ public class RoomController {
     }
 
     //Create
+    @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @PostMapping
     public ResponseEntity<?> addRoom(@RequestBody Room newRoom) {
         Room addedRoom;
@@ -67,6 +69,7 @@ public class RoomController {
     }
 
     //Update
+    @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @PutMapping(value = "/{room_number}")
     public ResponseEntity<?> changeRoom(@PathVariable("room_number") int roomNumber, @RequestBody Room newRoom) {
         Room room;
@@ -78,6 +81,7 @@ public class RoomController {
         return new ResponseEntity<>(room, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @PutMapping(value = "/{room_number}/state")
     public ResponseEntity<?> changeState(@PathVariable("room_number") int roomNumber, @RequestBody RoomState newState) {
         Room newRoom = roomService.changeState(roomNumber,newState);
@@ -85,6 +89,7 @@ public class RoomController {
     }
 
     //Delete
+    @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @DeleteMapping(value = "/{room_number}")
     public ResponseEntity<?> deleteRoom(@PathVariable("room_number") int roomNumber) {
         Room deletedRoom;
