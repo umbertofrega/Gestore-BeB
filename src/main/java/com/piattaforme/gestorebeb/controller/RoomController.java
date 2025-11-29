@@ -3,7 +3,6 @@ package com.piattaforme.gestorebeb.controller;
 import com.piattaforme.gestorebeb.model.entities.Room;
 import com.piattaforme.gestorebeb.model.enums.RoomState;
 import com.piattaforme.gestorebeb.model.enums.RoomType;
-import com.piattaforme.gestorebeb.model.exceptions.conflict.RoomAlreadyExistsException;
 import com.piattaforme.gestorebeb.model.services.RoomService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,23 +27,14 @@ public class RoomController {
     @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @PostMapping
     public ResponseEntity<?> addRoom(@RequestBody Room newRoom) {
-        Room addedRoom;
-        try {
-            addedRoom = roomService.addRoom(newRoom);
-        } catch (RoomAlreadyExistsException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "A room with this number already exists");
-        }
+        Room addedRoom = roomService.addRoom(newRoom);
         return new ResponseEntity<>(addedRoom, HttpStatus.CREATED);
     }
 
     //Read
     @GetMapping(value = "/{room_number}")
     public ResponseEntity<?> getRoomData(@PathVariable("room_number") int roomNumber) {
-        try {
-            return new ResponseEntity<>(roomService.getRoomByNumber(roomNumber),HttpStatus.OK);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found");
-        }
+        return new ResponseEntity<>(roomService.getRoomByNumber(roomNumber), HttpStatus.OK);
     }
 
     @GetMapping
@@ -72,12 +62,7 @@ public class RoomController {
     @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @PutMapping(value = "/{room_number}")
     public ResponseEntity<?> changeRoom(@PathVariable("room_number") int roomNumber, @RequestBody Room newRoom) {
-        Room room;
-        try {
-            room = roomService.updateRoom(roomNumber,newRoom);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        Room room = roomService.updateRoom(roomNumber, newRoom);
         return new ResponseEntity<>(room, HttpStatus.OK);
     }
 
@@ -92,12 +77,7 @@ public class RoomController {
     @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @DeleteMapping(value = "/{room_number}")
     public ResponseEntity<?> deleteRoom(@PathVariable("room_number") int roomNumber) {
-        Room deletedRoom;
-        try {
-            deletedRoom = roomService.deleteRoom(roomNumber);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found");
-        }
+        Room deletedRoom = roomService.deleteRoom(roomNumber);
         return new ResponseEntity<>(deletedRoom, HttpStatus.OK);
     }
 }

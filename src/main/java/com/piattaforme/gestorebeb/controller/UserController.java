@@ -4,7 +4,6 @@ import com.piattaforme.gestorebeb.model.entities.User;
 import com.piattaforme.gestorebeb.model.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.MailAuthenticationException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,12 +22,7 @@ private final UserService userService;
     //Create
     @PostMapping
     public ResponseEntity<?> registerUser(@RequestBody User user) {
-        User newUser;
-        try {
-            newUser = userService.registerUser(user);
-        } catch (MailAuthenticationException e) {
-            throw new RuntimeException(e);
-        }
+        User newUser = userService.registerUser(user);
         return new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
 
