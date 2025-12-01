@@ -3,14 +3,17 @@ package com.piattaforme.gestorebeb.model.services;
 
 import com.piattaforme.gestorebeb.model.entities.Reservation;
 import com.piattaforme.gestorebeb.model.enums.PaymentStatus;
-import com.piattaforme.gestorebeb.model.exceptions.ReservationCancellationDeadlineException;
-import com.piattaforme.gestorebeb.model.exceptions.ReservationNotFoundException;
-import com.piattaforme.gestorebeb.model.exceptions.RoomOccupiedException;
+import com.piattaforme.gestorebeb.model.enums.RoomType;
+import com.piattaforme.gestorebeb.model.exceptions.conflict.RoomOccupiedException;
+import com.piattaforme.gestorebeb.model.exceptions.forbidden.ReservationCancellationDeadlineException;
+import com.piattaforme.gestorebeb.model.exceptions.notFound.ReservationNotFoundException;
 import com.piattaforme.gestorebeb.model.repositories.ReservationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -92,4 +95,17 @@ public class ReservationService {
         else throw new ReservationNotFoundException("The reservation doesn't exist");
     }
 
+    @Transactional(readOnly = true)
+    public List<Reservation> searchReservationAdvanced(RoomType type) {
+        List<Reservation> reservations = reservationRepository.findByRoomType(type);
+        LocalDate now = LocalDate.now();
+        Comparator<Reservation> comparator = (r1, r2) -> {
+            long diff1 = Math.abs(ChronoUnit.DAYS.between(now, r1.getCheckin()));
+            long diff2 = Math.abs(ChronoUnit.DAYS.between(now, r2.getCheckin()));
+
+            return Long.compare(diff1, diff2);
+        };
+        reservations.sort(comparator);
+        return reservations;
+    }
 }

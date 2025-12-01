@@ -2,16 +2,14 @@ package com.piattaforme.gestorebeb.controller;
 
 import com.piattaforme.gestorebeb.model.entities.Reservation;
 import com.piattaforme.gestorebeb.model.enums.PaymentStatus;
-import com.piattaforme.gestorebeb.model.exceptions.ReservationCancellationDeadlineException;
-import com.piattaforme.gestorebeb.model.exceptions.ReservationNotFoundException;
-import com.piattaforme.gestorebeb.model.exceptions.RoomNotFoundException;
-import com.piattaforme.gestorebeb.model.exceptions.RoomOccupiedException;
+import com.piattaforme.gestorebeb.model.enums.RoomType;
 import com.piattaforme.gestorebeb.model.services.ReservationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/reservations")
@@ -27,15 +25,12 @@ public class ReservationController {
     @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @PostMapping
     public ResponseEntity<?> addReservation(@RequestBody Reservation newReservation){
-        try{
-            Reservation reservation = reservationService.reserveRoom(newReservation);
-            return new ResponseEntity<>(reservation, HttpStatus.CREATED);
-        } catch(RoomOccupiedException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "The room is reserved");
-        }
+        Reservation reservation = reservationService.reserveRoom(newReservation);
+        return new ResponseEntity<>(reservation, HttpStatus.CREATED);
     }
 
     //Read
+    @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @GetMapping
     public ResponseEntity<?> getAllReservations(){
         return new ResponseEntity<>(reservationService.getAll(), HttpStatus.OK);
@@ -43,25 +38,22 @@ public class ReservationController {
 
     @GetMapping("/{reservationId}")
     public ResponseEntity<?> getReservation(@PathVariable int reservationId){
-        Reservation reservation;
-        try {
-           reservation = reservationService.findById(reservationId);
-        } catch (ReservationNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found");
-        }
+        Reservation reservation = reservationService.findById(reservationId);
         return new ResponseEntity<>(reservation, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
+    @GetMapping("/search")
+    public ResponseEntity<?> searchReservation(@RequestBody RoomType type) {
+        List<Reservation> reservations = reservationService.searchReservationAdvanced(type);
+        return new ResponseEntity<>(reservations, HttpStatus.OK);
     }
 
     //Update
     @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @PutMapping("/{reservationId}")
     public ResponseEntity<?> changeStatus(@PathVariable int reservationId, PaymentStatus status){
-        Reservation reservation;
-        try {
-            reservation = reservationService.changePaymentStatus(reservationId,status);
-        } catch (ReservationNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found");
-        }
+        Reservation reservation = reservationService.changePaymentStatus(reservationId, status);
         return new ResponseEntity<>(reservation, HttpStatus.OK);
     }
 
@@ -69,14 +61,7 @@ public class ReservationController {
     @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @DeleteMapping("/{reservationId}")
     public ResponseEntity<?> deleteReservation(@PathVariable int reservationId) {
-        Reservation reservation;
-        try {
-            reservation = reservationService.deleteReservation(reservationId);
-        } catch (RoomNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found");
-        } catch (ReservationCancellationDeadlineException t){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The time to revoke the reservation has finished");
-        }
+        Reservation reservation = reservationService.deleteReservation(reservationId);
         return new ResponseEntity<>(reservation, HttpStatus.OK);
     }
 
