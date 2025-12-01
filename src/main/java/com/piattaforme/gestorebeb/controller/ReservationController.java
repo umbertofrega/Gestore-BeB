@@ -2,11 +2,14 @@ package com.piattaforme.gestorebeb.controller;
 
 import com.piattaforme.gestorebeb.model.entities.Reservation;
 import com.piattaforme.gestorebeb.model.enums.PaymentStatus;
+import com.piattaforme.gestorebeb.model.enums.RoomType;
 import com.piattaforme.gestorebeb.model.services.ReservationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/reservations")
@@ -27,6 +30,7 @@ public class ReservationController {
     }
 
     //Read
+    @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @GetMapping
     public ResponseEntity<?> getAllReservations(){
         return new ResponseEntity<>(reservationService.getAll(), HttpStatus.OK);
@@ -36,6 +40,13 @@ public class ReservationController {
     public ResponseEntity<?> getReservation(@PathVariable int reservationId){
         Reservation reservation = reservationService.findById(reservationId);
         return new ResponseEntity<>(reservation, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
+    @GetMapping("/search")
+    public ResponseEntity<?> searchReservation(@RequestBody RoomType type) {
+        List<Reservation> reservations = reservationService.searchReservationAdvanced(type);
+        return new ResponseEntity<>(reservations, HttpStatus.OK);
     }
 
     //Update
