@@ -3,6 +3,7 @@ package com.piattaforme.gestorebeb.controller;
 import com.piattaforme.gestorebeb.model.entities.Reservation;
 import com.piattaforme.gestorebeb.model.enums.PaymentStatus;
 import com.piattaforme.gestorebeb.model.enums.RoomType;
+import com.piattaforme.gestorebeb.model.services.EmailService;
 import com.piattaforme.gestorebeb.model.services.ReservationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +17,11 @@ import java.util.List;
 public class ReservationController {
 
     private final ReservationService reservationService;
+    private final EmailService emailService;
 
-    public ReservationController(ReservationService reservationService){
+    public ReservationController(ReservationService reservationService, EmailService emailService) {
         this.reservationService=reservationService;
+        this.emailService = emailService;
     }
 
     //Create
@@ -26,6 +29,7 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<?> addReservation(@RequestBody Reservation newReservation){
         Reservation reservation = reservationService.reserveRoom(newReservation);
+        emailService.sendReservationConfirmation(newReservation);
         return new ResponseEntity<>(reservation, HttpStatus.CREATED);
     }
 
@@ -62,6 +66,7 @@ public class ReservationController {
     @DeleteMapping("/{reservationId}")
     public ResponseEntity<?> deleteReservation(@PathVariable int reservationId) {
         Reservation reservation = reservationService.deleteReservation(reservationId);
+        emailService.sendCancellationConfirmation(reservation);
         return new ResponseEntity<>(reservation, HttpStatus.OK);
     }
 
