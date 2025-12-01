@@ -21,7 +21,6 @@ public class GuestService {
     public Guest addGuest(Guest guest){
         if(guest!=null && !guestRepository.existsByEmail(guest.getEmail()))
             return guestRepository.save(guest);
-
         throw new EmailAlreadyExists("Guest already exists");
     }
 
