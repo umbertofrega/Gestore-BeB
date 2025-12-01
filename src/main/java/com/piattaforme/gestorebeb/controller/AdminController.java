@@ -16,14 +16,14 @@ public class AdminController {
         this.adminService = adminService;
     }
 
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasRole('OWNER') and isAuthenticated()")
     @PostMapping()
     public ResponseEntity<?> registerAdmin(@RequestBody Admin admin) {
         Admin newAdmin = adminService.addAdmin(admin);
         return ResponseEntity.ok(newAdmin);
     }
 
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasRole('OWNER') and isAuthenticated()")
     @GetMapping()
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(adminService.getAll());
