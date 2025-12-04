@@ -24,13 +24,6 @@ public class UserController {
     //Create
 
     //Read
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/me")
-    public ResponseEntity<?> getCurrentUser(){
-        User currentUser = userService.syncUserWithKeycloak();
-        return new ResponseEntity<>(currentUser, HttpStatus.OK);
-    }
-
     @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @GetMapping
     public ResponseEntity<?> getAllUsers(){
