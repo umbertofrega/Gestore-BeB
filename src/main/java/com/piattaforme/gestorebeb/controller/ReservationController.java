@@ -48,7 +48,7 @@ public class ReservationController {
 
     @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @GetMapping("/search")
-    public ResponseEntity<?> searchReservation(@RequestBody RoomType type) {
+    public ResponseEntity<?> searchReservation(@RequestParam RoomType type) {
         List<Reservation> reservations = reservationService.searchReservationAdvanced(type);
         return new ResponseEntity<>(reservations, HttpStatus.OK);
     }
@@ -56,7 +56,7 @@ public class ReservationController {
     //Update
     @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @PutMapping("/{reservationId}")
-    public ResponseEntity<?> changeStatus(@PathVariable int reservationId, PaymentStatus status){
+    public ResponseEntity<?> updateStatus(@PathVariable int reservationId, @RequestBody PaymentStatus status) {
         Reservation reservation = reservationService.changePaymentStatus(reservationId, status);
         return new ResponseEntity<>(reservation, HttpStatus.OK);
     }
