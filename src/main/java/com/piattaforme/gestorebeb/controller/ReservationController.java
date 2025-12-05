@@ -3,6 +3,7 @@ package com.piattaforme.gestorebeb.controller;
 import com.piattaforme.gestorebeb.model.entities.Reservation;
 import com.piattaforme.gestorebeb.model.enums.PaymentStatus;
 import com.piattaforme.gestorebeb.model.enums.RoomType;
+import com.piattaforme.gestorebeb.model.services.EmailService;
 import com.piattaforme.gestorebeb.model.services.ReservationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,16 +17,18 @@ import java.util.List;
 public class ReservationController {
 
     private final ReservationService reservationService;
+    //private final EmailService emailService;
 
-    public ReservationController(ReservationService reservationService){
+    public ReservationController(ReservationService reservationService, EmailService emailService) {
         this.reservationService=reservationService;
+        //this.emailService = emailService;
     }
 
     //Create
-    @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @PostMapping
     public ResponseEntity<?> addReservation(@RequestBody Reservation newReservation){
         Reservation reservation = reservationService.reserveRoom(newReservation);
+        //emailService.sendReservationConfirmation(newReservation);
         return new ResponseEntity<>(reservation, HttpStatus.CREATED);
     }
 
@@ -44,7 +47,7 @@ public class ReservationController {
 
     @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @GetMapping("/search")
-    public ResponseEntity<?> searchReservation(@RequestBody RoomType type) {
+    public ResponseEntity<?> searchReservation(@RequestParam RoomType type) {
         List<Reservation> reservations = reservationService.searchReservationAdvanced(type);
         return new ResponseEntity<>(reservations, HttpStatus.OK);
     }
@@ -52,16 +55,17 @@ public class ReservationController {
     //Update
     @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @PutMapping("/{reservationId}")
-    public ResponseEntity<?> changeStatus(@PathVariable int reservationId, PaymentStatus status){
+    public ResponseEntity<?> updateStatus(@PathVariable int reservationId, @RequestBody PaymentStatus status) {
         Reservation reservation = reservationService.changePaymentStatus(reservationId, status);
         return new ResponseEntity<>(reservation, HttpStatus.OK);
     }
 
     //Delete
-    @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @DeleteMapping("/{reservationId}")
     public ResponseEntity<?> deleteReservation(@PathVariable int reservationId) {
+        System.out.println("Hello");
         Reservation reservation = reservationService.deleteReservation(reservationId);
+        //emailService.sendCancellationConfirmation(reservation);
         return new ResponseEntity<>(reservation, HttpStatus.OK);
     }
 

@@ -33,7 +33,7 @@ public class RoomController {
 
     //Read
     @GetMapping(value = "/{room_number}")
-    public ResponseEntity<?> getRoomData(@PathVariable("room_number") int roomNumber) {
+    public ResponseEntity<?> getRoom(@PathVariable("room_number") int roomNumber) {
         return new ResponseEntity<>(roomService.getRoomByNumber(roomNumber), HttpStatus.OK);
     }
 
@@ -61,14 +61,14 @@ public class RoomController {
     //Update
     @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @PutMapping(value = "/{room_number}")
-    public ResponseEntity<?> changeRoom(@PathVariable("room_number") int roomNumber, @RequestBody Room newRoom) {
+    public ResponseEntity<?> updateRoom(@PathVariable("room_number") int roomNumber, @RequestBody Room newRoom) {
         Room room = roomService.updateRoom(roomNumber, newRoom);
         return new ResponseEntity<>(room, HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @PutMapping(value = "/{room_number}/state")
-    public ResponseEntity<?> changeState(@PathVariable("room_number") int roomNumber, @RequestBody RoomState newState) {
+    public ResponseEntity<?> updateState(@PathVariable("room_number") int roomNumber, @RequestBody RoomState newState) {
         Room newRoom = roomService.changeState(roomNumber,newState);
         return new ResponseEntity<>(newRoom, HttpStatus.OK);
     }

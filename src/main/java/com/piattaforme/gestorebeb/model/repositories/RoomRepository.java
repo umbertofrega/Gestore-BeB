@@ -20,7 +20,7 @@ public interface RoomRepository extends JpaRepository<Room,Integer> {
             "    WHERE res.room.number = r.number AND " +
             " (:checkin < res.checkout AND :checkout > res.checkin)" +
             ") AND r.state = 'AVAILABLE'")
-    List<Room> getAvaliable(@Param("checkn") LocalDate checkIn,@Param("checkout") LocalDate checkOut);
+    List<Room> getAvaliable(@Param("checkin") LocalDate checkIn, @Param("checkout") LocalDate checkOut);
 
     @Query("SELECT DISTINCT res.room FROM Reservation res WHERE res.checkout > :now")
     List<Room> getReserved(@Param("now") LocalDate now);

@@ -44,7 +44,7 @@ public class AdminService {
     private void isRealOwner() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String ownerKeycloakCode = ((Jwt) authentication.getPrincipal()).getSubject();
-        Admin owner = adminRepository.getAdminByCode(ownerKeycloakCode);
+        Admin owner = adminRepository.findByCode(ownerKeycloakCode);
 
         if (!owner.getRole().equals(AdminRole.OWNER)) {
             System.err.print("The admin " + owner + " tried to do an owner operation.");
