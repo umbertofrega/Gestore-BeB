@@ -17,14 +17,10 @@ import java.util.List;
 public class GuestService {
 
     private final GuestRepository guestRepository;
-    private final Guest currentGuest;
+    private Guest currentGuest;
 
     public GuestService(GuestRepository guestRepository) {
         this.guestRepository = guestRepository;
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Jwt jwt = (Jwt) authentication.getPrincipal();
-        String email = jwt.getClaim("email");
-        this.currentGuest = guestRepository.findByEmail(email);
     }
 
     @Transactional
@@ -41,6 +37,11 @@ public class GuestService {
 
     @Transactional(readOnly = true)
     public Guest getCurrentGuest() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Jwt jwt = (Jwt) authentication.getPrincipal();
+        String email = jwt.getClaim("email");
+
+        this.currentGuest = guestRepository.findByEmail(email);
         if (currentGuest == null)
             throw new UserNotFoundException("The guest doesn't exist");
         return currentGuest;
