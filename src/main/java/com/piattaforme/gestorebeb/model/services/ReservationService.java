@@ -4,6 +4,7 @@ package com.piattaforme.gestorebeb.model.services;
 import com.piattaforme.gestorebeb.model.entities.Reservation;
 import com.piattaforme.gestorebeb.model.enums.PaymentStatus;
 import com.piattaforme.gestorebeb.model.enums.RoomType;
+import com.piattaforme.gestorebeb.model.exceptions.conflict.ReservationDatesMismatch;
 import com.piattaforme.gestorebeb.model.exceptions.conflict.RoomOccupiedException;
 import com.piattaforme.gestorebeb.model.exceptions.forbidden.ReservationCancellationDeadlineException;
 import com.piattaforme.gestorebeb.model.exceptions.notFound.ReservationNotFoundException;
@@ -41,8 +42,13 @@ public class ReservationService {
 
     @Transactional
     public Reservation reserveRoom(Reservation newReservation) {
+        LocalDate checkin = newReservation.getCheckin();
+        LocalDate checkout = newReservation.getCheckout();
+
         if(newReservation.getRoom() == null)
             throw new IllegalArgumentException("Room is null");
+        if (checkin.equals(checkout) || !checkout.isAfter(checkin))
+            throw new ReservationDatesMismatch("You can't use these dates");
 
         if(isRoomOccupied(newReservation))
             throw new RoomOccupiedException("The room is already used in that period");
@@ -82,7 +88,6 @@ public class ReservationService {
 
     @Transactional
     public Reservation deleteReservation(int reservationId){
-
         if(reservationRepository.existsById(reservationId)) {
             Reservation reservation = reservationRepository.getById(reservationId);
             LocalDate deadline = reservation.getCheckin().minusWeeks(1);
