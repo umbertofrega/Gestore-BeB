@@ -13,6 +13,6 @@ public interface GuestRepository extends JpaRepository<Guest,Integer> {
 
     Guest findByEmail(String email);
 
-    @Query("SELECT r FROM Reservation r WHERE r.guest = :id")
+    @Query("SELECT r FROM Reservation r WHERE r.guest.id = :id")
     List<Reservation> findReservationById(@Param("id") int id);
 }
