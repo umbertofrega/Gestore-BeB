@@ -17,19 +17,18 @@ import java.util.List;
 public class ReservationController {
 
     private final ReservationService reservationService;
-    private final EmailService emailService;
+    //private final EmailService emailService;
 
     public ReservationController(ReservationService reservationService, EmailService emailService) {
         this.reservationService=reservationService;
-        this.emailService = emailService;
+        //this.emailService = emailService;
     }
 
     //Create
-    @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @PostMapping
     public ResponseEntity<?> addReservation(@RequestBody Reservation newReservation){
         Reservation reservation = reservationService.reserveRoom(newReservation);
-        emailService.sendReservationConfirmation(newReservation);
+        //emailService.sendReservationConfirmation(newReservation);
         return new ResponseEntity<>(reservation, HttpStatus.CREATED);
     }
 
@@ -62,11 +61,11 @@ public class ReservationController {
     }
 
     //Delete
-    @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @DeleteMapping("/{reservationId}")
     public ResponseEntity<?> deleteReservation(@PathVariable int reservationId) {
+        System.out.println("Hello");
         Reservation reservation = reservationService.deleteReservation(reservationId);
-        emailService.sendCancellationConfirmation(reservation);
+        //emailService.sendCancellationConfirmation(reservation);
         return new ResponseEntity<>(reservation, HttpStatus.OK);
     }
 
