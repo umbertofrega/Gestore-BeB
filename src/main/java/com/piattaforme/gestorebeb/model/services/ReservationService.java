@@ -33,7 +33,7 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public Reservation findById(int id) {
-        Reservation newReservation = reservationRepository.getById(id);
+        Reservation newReservation = reservationRepository.findById(id);
         if(newReservation == null) {
             throw new ReservationNotFoundException("The reservation doesn't exist");
         }
@@ -78,19 +78,19 @@ public class ReservationService {
 
     @Transactional
     public Reservation changePaymentStatus(int reservationId, PaymentStatus status){
-        if(reservationRepository.existsById(reservationId)){
-            Reservation res = reservationRepository.getById(reservationId);
-            res.setPaymentStatus(status);
-            reservationRepository.save(res);
-            return res;
+        Reservation reservation = reservationRepository.findById(reservationId);
+        if (reservation != null) {
+            reservation.setPaymentStatus(status);
+            reservationRepository.save(reservation);
+            return reservation;
         }
         throw new ReservationNotFoundException("The reservation doesn't exist");
     }
 
     @Transactional
     public Reservation deleteReservation(int reservationId){
-        if(reservationRepository.existsById(reservationId)) {
-            Reservation reservation = reservationRepository.getById(reservationId);
+        Reservation reservation = reservationRepository.findById(reservationId);
+        if (reservation != null) {
             LocalDate deadline = reservation.getCheckin().minusWeeks(1);
 
             if(LocalDate.now().isAfter(deadline))

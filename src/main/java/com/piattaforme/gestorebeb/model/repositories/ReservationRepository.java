@@ -11,7 +11,8 @@ import java.util.List;
 
 public interface ReservationRepository extends JpaRepository<Reservation,Integer> {
     List<Reservation> findByRoom(Room room);
-    Reservation getById(int Id);
+
+    Reservation findById(int Id);
     Reservation deleteById(int Id);
 
     @Query("SELECT r FROM Reservation r WHERE r.room.type = :type")
