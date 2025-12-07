@@ -81,6 +81,7 @@ public class ReservationService {
         if(reservationRepository.existsById(reservationId)){
             Reservation res = reservationRepository.getById(reservationId);
             res.setPaymentStatus(status);
+            reservationRepository.save(res);
             return res;
         }
         throw new ReservationNotFoundException("The reservation doesn't exist");
