@@ -2,7 +2,6 @@ package com.piattaforme.gestorebeb.controller;
 
 import com.piattaforme.gestorebeb.model.entities.Reservation;
 import com.piattaforme.gestorebeb.model.enums.PaymentStatus;
-import com.piattaforme.gestorebeb.model.enums.RoomType;
 import com.piattaforme.gestorebeb.model.services.EmailService;
 import com.piattaforme.gestorebeb.model.services.ReservationService;
 import org.springframework.http.HttpStatus;
@@ -47,8 +46,8 @@ public class ReservationController {
 
     @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @GetMapping("/search")
-    public ResponseEntity<?> searchReservation(@RequestParam RoomType type) {
-        List<Reservation> reservations = reservationService.searchReservationAdvanced(type);
+    public ResponseEntity<?> getOnlyPending() {
+        List<Reservation> reservations = reservationService.searchReservationAdvanced();
         return new ResponseEntity<>(reservations, HttpStatus.OK);
     }
 
