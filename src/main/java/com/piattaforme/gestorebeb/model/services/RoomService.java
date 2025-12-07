@@ -5,7 +5,7 @@ import com.piattaforme.gestorebeb.model.enums.RoomState;
 import com.piattaforme.gestorebeb.model.enums.RoomType;
 import com.piattaforme.gestorebeb.model.exceptions.conflict.RoomAlreadyExistsException;
 import com.piattaforme.gestorebeb.model.exceptions.conflict.RoomMismatchException;
-import com.piattaforme.gestorebeb.model.exceptions.forbidden.RoomNotDeletableException;
+import com.piattaforme.gestorebeb.model.exceptions.forbidden.RoomNumberNotAllowedException;
 import com.piattaforme.gestorebeb.model.exceptions.notFound.RoomNotFoundException;
 import com.piattaforme.gestorebeb.model.repositories.RoomRepository;
 import org.springframework.stereotype.Service;
@@ -26,9 +26,13 @@ public class RoomService {
 
     @Transactional
     public Room addRoom(Room room) {
-        if (room != null && !roomRepository.existsRoomByNumber(room.getNumber()))
-            return roomRepository.save(room);
-        throw new RoomAlreadyExistsException("The room alredy exists");
+        if (room == null) throw new IllegalArgumentException("Room must not be null");
+        if (roomRepository.existsRoomByNumber(room.getNumber()))
+            throw new RoomAlreadyExistsException("The room alredy exists");
+
+        if (room.getNumber() < 0) throw new RoomNumberNotAllowedException("The room number must be positive");
+
+        return roomRepository.save(room);
     }
 
     @Transactional
@@ -44,14 +48,12 @@ public class RoomService {
 
     @Transactional
     public Room deleteRoom(int roomNumber) {
+        Room room = roomRepository.getRoomByNumber(roomNumber);
+        if (room == null) throw new RoomNotFoundException("The Room does not exist");
 
-        if (roomRepository.existsRoomByNumber(roomNumber)){
-            if(isReserved(roomNumber))
-                throw new RoomNotDeletableException("The room is reserved, you can't delete it.");
-
-            return roomRepository.deleteByNumber(roomNumber);
-        }
-        throw new RoomNotFoundException("The Room does not exist");
+        room.setState(RoomState.HIDDEN);
+        room.setNumber(roomNumber * -1);
+        return roomRepository.save(room);
     }
 
     @Transactional
@@ -67,13 +69,6 @@ public class RoomService {
         throw new RoomNotFoundException("The Room does not exist");
     }
 
-    private boolean isReserved(int roomNumber){
-       for(Room r : roomRepository.getReserved(LocalDate.now()))
-           if(r.getNumber() == roomNumber)
-               return true;
-       return false;
-    }
-
     @Transactional(readOnly = true)
     public Room getRoomByNumber(int number) {
         Room room = roomRepository.getRoomByNumber(number);
@@ -84,7 +79,7 @@ public class RoomService {
 
     @Transactional(readOnly = true)
     public List<Room> getAll() {
-        return roomRepository.findAll();
+        return roomRepository.findByStateNot(RoomState.HIDDEN);
     }
 
     public List<Room> searchRoomsAdvanced(LocalDate checkIn, LocalDate checkOut, List<RoomType> types, double maxPrice, int minSize) {
