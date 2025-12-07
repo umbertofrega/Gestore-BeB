@@ -55,8 +55,8 @@ public class ReservationController {
     //Update
     @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @PutMapping("/{reservationId}")
-    public ResponseEntity<?> updateStatus(@PathVariable int reservationId, @RequestBody PaymentStatus status) {
-        Reservation reservation = reservationService.changePaymentStatus(reservationId, status);
+    public ResponseEntity<?> updateStatus(@PathVariable int reservationId) {
+        Reservation reservation = reservationService.changePaymentStatus(reservationId, PaymentStatus.PAID);
         return new ResponseEntity<>(reservation, HttpStatus.OK);
     }
 
