@@ -2,7 +2,6 @@ package com.piattaforme.gestorebeb.model.services;
 
 import com.piattaforme.gestorebeb.model.entities.Room;
 import com.piattaforme.gestorebeb.model.enums.RoomState;
-import com.piattaforme.gestorebeb.model.enums.RoomType;
 import com.piattaforme.gestorebeb.model.exceptions.conflict.RoomAlreadyExistsException;
 import com.piattaforme.gestorebeb.model.exceptions.conflict.RoomMismatchException;
 import com.piattaforme.gestorebeb.model.exceptions.notFound.RoomNotFoundException;
@@ -78,11 +77,11 @@ public class RoomService {
         return roomRepository.findByStateNot(RoomState.HIDDEN);
     }
 
-    public List<Room> searchRoomsAdvanced(LocalDate checkIn, LocalDate checkOut, List<RoomType> types, double maxPrice, int minSize) {
+    public List<Room> searchRoomsAdvanced(LocalDate checkIn, LocalDate checkOut, int minGuests, double maxPrice, int minSize) {
         List<Room> avaliableRooms = roomRepository.getAvaliable(checkIn,checkOut);
         List<Room> result = new ArrayList<>();
         for(Room r: avaliableRooms) {
-            if (types.contains(r.getType()) && r.getMaxGuests() > minSize && r.getPrice() < maxPrice)
+            if (r.getMaxGuests() >= minGuests && r.getPrice() <= maxPrice && r.getSize() >= minSize)
                result.add(r);
         }
         return result;

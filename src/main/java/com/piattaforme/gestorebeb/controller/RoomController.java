@@ -2,7 +2,6 @@ package com.piattaforme.gestorebeb.controller;
 
 import com.piattaforme.gestorebeb.model.entities.Room;
 import com.piattaforme.gestorebeb.model.enums.RoomState;
-import com.piattaforme.gestorebeb.model.enums.RoomType;
 import com.piattaforme.gestorebeb.model.services.RoomService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,11 +45,11 @@ public class RoomController {
     public ResponseEntity<List<Room>> searchRooms(
             @RequestParam("checkin") LocalDate checkIn,
             @RequestParam("checkout") LocalDate checkOut,
-            @RequestParam(value = "type", required = false, defaultValue = "SINGLE") List<RoomType> types,
-            @RequestParam(value = "maxPrice", required = false, defaultValue = "300") double maxPrice,
-            @RequestParam(value = "minSize", required = false, defaultValue = "0") int minSize
+            @RequestParam(value = "maxPrice", required = false, defaultValue = "3000") double maxPrice,
+            @RequestParam(value = "minSize", required = false, defaultValue = "0") int minSize,
+            @RequestParam(value = "minGuests", required = false, defaultValue = "10") int minGuests
     ) {
-        List<Room> rooms = roomService.searchRoomsAdvanced(checkIn, checkOut, types, maxPrice, minSize);
+        List<Room> rooms = roomService.searchRoomsAdvanced(checkIn, checkOut, minGuests, maxPrice, minSize);
 
         if (rooms.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No rooms available matching criteria");

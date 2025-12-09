@@ -2,7 +2,6 @@ package com.piattaforme.gestorebeb.model.entities;
 
 
 import com.piattaforme.gestorebeb.model.enums.RoomState;
-import com.piattaforme.gestorebeb.model.enums.RoomType;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -18,15 +17,14 @@ public class Room {
     @Column(name="number")
     private int number;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name="type")
-    private RoomType type;
-
     @Column(name="name")
     private String name;
 
     @Column(name="price")
     private double price;
+
+    @Column(name = "size")
+    private int size;
 
     @Column(name = "max_guests")
     private int maxGuests;
