@@ -81,7 +81,7 @@ public class RoomService {
         List<Room> avaliableRooms = roomRepository.getAvaliable(checkIn,checkOut);
         List<Room> result = new ArrayList<>();
         for(Room r: avaliableRooms) {
-            if (r.getMaxGuests() >= minGuests && r.getPrice() <= maxPrice && r.getSize() >= minSize)
+            if (r.getMaxGuests() >= minGuests && r.getPrice() <= maxPrice && r.getSize() > minSize)
                result.add(r);
         }
         return result;
