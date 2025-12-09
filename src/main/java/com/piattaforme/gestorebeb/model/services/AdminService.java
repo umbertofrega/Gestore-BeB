@@ -30,25 +30,35 @@ public class AdminService {
         if(adminRepository.existsByEmail(newAdmin.getEmail()))
             throw new EmailAlreadyExists("Used email");
 
-        isRealOwner();
 
-        return adminRepository.save(newAdmin);
+        if (isRealOwner())
+            return adminRepository.save(newAdmin);
+        throw new InsufficientRoleException("Only the owner can do this operation, you are not the owner");
     }
 
     @Transactional(readOnly = true)
     public List<Admin> getAll() {
-        isRealOwner();
-        return adminRepository.findAll();
+        if (isRealOwner())
+            return adminRepository.findAll();
+        throw new InsufficientRoleException("Only the owner can do this operation, you are not the owner");
     }
 
-    private void isRealOwner() {
+    private boolean isRealOwner() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String ownerKeycloakCode = ((Jwt) authentication.getPrincipal()).getSubject();
         Admin owner = adminRepository.findByCode(ownerKeycloakCode);
 
         if (!owner.getRole().equals(AdminRole.OWNER)) {
             System.err.print("The admin " + owner + " tried to do an owner operation.");
-            throw new InsufficientRoleException("Only the owner can do this operation, you are not the owner");
         }
+        return true;
+    }
+
+    @Transactional(readOnly = true)
+    public void removeAdmin(int id) {
+        if (isRealOwner()) {
+            this.adminRepository.deleteById(id);
+        }
+        throw new InsufficientRoleException("Only the owner can do this operation, you are not the owner");
     }
 }

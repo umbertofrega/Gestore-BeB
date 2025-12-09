@@ -17,16 +17,23 @@ public class AdminController {
     }
 
     @PreAuthorize("hasRole('OWNER') and isAuthenticated()")
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<?> registerAdmin(@RequestBody Admin admin) {
         Admin newAdmin = adminService.addAdmin(admin);
         return ResponseEntity.ok(newAdmin);
     }
 
     @PreAuthorize("hasRole('OWNER') and isAuthenticated()")
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(adminService.getAll());
     }
 
+    @PreAuthorize("hasRole('OWNER') and isAuthenticated()")
+    @DeleteMapping
+    public ResponseEntity<?> deleteAdmin(@RequestBody int id) {
+        adminService.removeAdmin(id);
+        return ResponseEntity.noContent().build();
+    }
 }
+
