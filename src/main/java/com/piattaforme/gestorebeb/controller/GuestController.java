@@ -43,4 +43,10 @@ public class GuestController {
     public ResponseEntity<List<Reservation>> getReservations() {
         return ResponseEntity.ok(guestService.getReservations());
     }
+
+    @PreAuthorize("hasAnyRole('RECEPTIONIST','OWNER')")
+    @GetMapping("/inHouse")
+    public ResponseEntity<List<Guest>> getGuestsInHouse() {
+        return ResponseEntity.ok(guestService.getInHouse());
+    }
 }

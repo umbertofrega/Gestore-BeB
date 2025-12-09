@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -53,4 +54,8 @@ public class GuestService {
         return guestRepository.findReservationById(currentGuest.getId());
     }
 
+    @Transactional(readOnly = true)
+    public List<Guest> getInHouse() {
+        return guestRepository.findInHouse(LocalDate.now());
+    }
 }

@@ -11,6 +11,10 @@ import lombok.Data;
 @Table(name="rooms")
 public class Room {
     @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
     @Column(name="number")
     private int number;
 
@@ -24,12 +28,13 @@ public class Room {
     @Column(name="price")
     private double price;
 
-    @Column(name="size")
-    private int size;
+    @Column(name = "max_guests")
+    private int maxGuests;
 
     @Enumerated(EnumType.STRING)
     @Column(name="state")
     private RoomState state;
 
+    @Column(name = "description")
     private String description;
 }
