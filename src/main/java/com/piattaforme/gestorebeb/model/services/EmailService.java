@@ -41,7 +41,7 @@ public class EmailService {
                         
                         La tua prenotazione è stata confermata!
                         
-                        Stanza: %s (%s)
+                        Stanza: %s
                         Check-in: %s
                         Check-out: %s
                         Prezzo Totale: %.2f €
@@ -51,7 +51,6 @@ public class EmailService {
                         """,
                 reservation.getGuest().getName(),
                 reservation.getRoom().getName(),
-                reservation.getRoom().getType(),
                 reservation.getCheckin(),
                 reservation.getCheckout(),
                 reservation.getPrice()
