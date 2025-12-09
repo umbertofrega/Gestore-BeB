@@ -5,7 +5,6 @@ import com.piattaforme.gestorebeb.model.enums.RoomState;
 import com.piattaforme.gestorebeb.model.enums.RoomType;
 import com.piattaforme.gestorebeb.model.exceptions.conflict.RoomAlreadyExistsException;
 import com.piattaforme.gestorebeb.model.exceptions.conflict.RoomMismatchException;
-import com.piattaforme.gestorebeb.model.exceptions.forbidden.RoomNumberNotAllowedException;
 import com.piattaforme.gestorebeb.model.exceptions.notFound.RoomNotFoundException;
 import com.piattaforme.gestorebeb.model.repositories.RoomRepository;
 import org.springframework.stereotype.Service;
@@ -30,8 +29,6 @@ public class RoomService {
         if (roomRepository.existsRoomByNumber(room.getNumber()))
             throw new RoomAlreadyExistsException("The room alredy exists");
 
-        if (room.getNumber() < 0) throw new RoomNumberNotAllowedException("The room number must be positive");
-
         return roomRepository.save(room);
     }
 
@@ -52,7 +49,6 @@ public class RoomService {
         if (room == null) throw new RoomNotFoundException("The Room does not exist");
 
         room.setState(RoomState.HIDDEN);
-        room.setNumber(roomNumber * -1);
         return roomRepository.save(room);
     }
 
@@ -71,7 +67,7 @@ public class RoomService {
 
     @Transactional(readOnly = true)
     public Room getRoomByNumber(int number) {
-        Room room = roomRepository.getRoomByNumber(number);
+        Room room = roomRepository.getRoomByNumberAndState(number, RoomState.AVAILABLE);
         if (room == null)
             throw new RoomNotFoundException("The Room does not exist");
         return room;
@@ -86,7 +82,7 @@ public class RoomService {
         List<Room> avaliableRooms = roomRepository.getAvaliable(checkIn,checkOut);
         List<Room> result = new ArrayList<>();
         for(Room r: avaliableRooms) {
-           if(types.contains(r.getType()) && r.getSize()>minSize && r.getPrice() < maxPrice)
+            if (types.contains(r.getType()) && r.getMaxGuests() > minSize && r.getPrice() < maxPrice)
                result.add(r);
         }
         return result;

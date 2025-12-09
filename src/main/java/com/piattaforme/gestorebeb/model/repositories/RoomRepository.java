@@ -23,4 +23,6 @@ public interface RoomRepository extends JpaRepository<Room,Integer> {
             " (:checkin < res.checkout AND :checkout > res.checkin)" +
             ") AND r.state = 'AVAILABLE'")
     List<Room> getAvaliable(@Param("checkin") LocalDate checkIn, @Param("checkout") LocalDate checkOut);
+
+    Room getRoomByNumberAndState(int number, RoomState state);
 }
