@@ -61,7 +61,7 @@ public class EmailService {
 
     public void sendCancellationConfirmation(Reservation reservation) {
         String to = reservation.getGuest().getEmail();
-        String subject = "Conferma Prenotazione GestoreBeB";
+        String subject = "Conferma Annullamento Prenotazione GestoreBeB";
 
         String body = String.format("""
                         Ciao %s,
