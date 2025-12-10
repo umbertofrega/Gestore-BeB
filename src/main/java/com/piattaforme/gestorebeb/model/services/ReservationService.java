@@ -61,6 +61,12 @@ public class ReservationService {
 
     @Transactional
     public Reservation reserveRoom(Reservation newReservation) {
+        newReservation.setId(0);
+
+        long days = ChronoUnit.DAYS.between(newReservation.getCheckin(), newReservation.getCheckout());
+
+        newReservation.setPrice(newReservation.getRoom().getPrice() * days);
+
         LocalDate checkin = newReservation.getCheckin();
         LocalDate checkout = newReservation.getCheckout();
 
@@ -78,6 +84,7 @@ public class ReservationService {
 
         if(isRoomOccupied(newReservation))
             throw new RoomOccupiedException("The room is already used in that period");
+
         return reservationRepository.save(newReservation);
     }
 

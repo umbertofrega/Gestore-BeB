@@ -47,7 +47,7 @@ public class RoomController {
             @RequestParam("checkout") LocalDate checkOut,
             @RequestParam(value = "maxPrice", required = false, defaultValue = "3000") double maxPrice,
             @RequestParam(value = "minSize", required = false, defaultValue = "0") int minSize,
-            @RequestParam(value = "minGuests", required = false, defaultValue = "10") int minGuests
+            @RequestParam(value = "minGuests", required = false, defaultValue = "1") int minGuests
     ) {
         List<Room> rooms = roomService.searchRoomsAdvanced(checkIn, checkOut, minGuests, maxPrice, minSize);
 
