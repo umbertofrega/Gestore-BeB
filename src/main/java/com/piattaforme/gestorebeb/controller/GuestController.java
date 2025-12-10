@@ -2,6 +2,7 @@ package com.piattaforme.gestorebeb.controller;
 
 import com.piattaforme.gestorebeb.model.entities.Guest;
 import com.piattaforme.gestorebeb.model.entities.Reservation;
+import com.piattaforme.gestorebeb.model.entities.Room;
 import com.piattaforme.gestorebeb.model.services.GuestService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,4 +50,11 @@ public class GuestController {
     public ResponseEntity<List<Guest>> getGuestsInHouse() {
         return ResponseEntity.ok(guestService.getInHouse());
     }
+
+    @PreAuthorize("hasAnyRole('RECEPTIONIST','OWNER')")
+    @GetMapping("/{guest_id}/room")
+    public ResponseEntity<Room> getRooms(@PathVariable("guest_id") int guestId) {
+        return ResponseEntity.ok(guestService.getRoom(guestId));
+    }
+
 }

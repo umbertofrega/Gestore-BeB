@@ -2,6 +2,7 @@ package com.piattaforme.gestorebeb.model.services;
 
 import com.piattaforme.gestorebeb.model.entities.Guest;
 import com.piattaforme.gestorebeb.model.entities.Reservation;
+import com.piattaforme.gestorebeb.model.entities.Room;
 import com.piattaforme.gestorebeb.model.exceptions.conflict.EmailAlreadyExists;
 import com.piattaforme.gestorebeb.model.exceptions.notFound.UserNotFoundException;
 import com.piattaforme.gestorebeb.model.repositories.GuestRepository;
@@ -25,14 +26,14 @@ public class GuestService {
     }
 
     @Transactional
-    public Guest addGuest(Guest guest){
-        if(guest!=null && !guestRepository.existsByEmail(guest.getEmail()))
+    public Guest addGuest(Guest guest) {
+        if (guest != null && !guestRepository.existsByEmail(guest.getEmail()))
             return guestRepository.save(guest);
         throw new EmailAlreadyExists("Guest already exists");
     }
 
     @Transactional(readOnly = true)
-    public List<Guest> getAllGuests(){
+    public List<Guest> getAllGuests() {
         return guestRepository.findAll();
     }
 
@@ -57,5 +58,10 @@ public class GuestService {
     @Transactional(readOnly = true)
     public List<Guest> getInHouse() {
         return guestRepository.findInHouse(LocalDate.now());
+    }
+
+    @Transactional(readOnly = true)
+    public Room getRoom(int guestId) {
+        return this.guestRepository.findActiveRoomById(guestId, LocalDate.now());
     }
 }
