@@ -3,6 +3,7 @@ package com.piattaforme.gestorebeb.model.services;
 
 import com.piattaforme.gestorebeb.model.entities.Reservation;
 import com.piattaforme.gestorebeb.model.enums.PaymentStatus;
+import com.piattaforme.gestorebeb.model.exceptions.conflict.GuestOccupiedException;
 import com.piattaforme.gestorebeb.model.exceptions.conflict.ReservationDatesMismatch;
 import com.piattaforme.gestorebeb.model.exceptions.conflict.RoomOccupiedException;
 import com.piattaforme.gestorebeb.model.exceptions.forbidden.ReservationCancellationDeadlineException;
@@ -39,26 +40,9 @@ public class ReservationService {
         return newReservation;
     }
 
-    @Transactional
-    public Reservation reserveRoom(Reservation newReservation) {
-        LocalDate checkin = newReservation.getCheckin();
-        LocalDate checkout = newReservation.getCheckout();
-
-        if(newReservation.getRoom() == null)
-            throw new IllegalArgumentException("Room is null");
-        if (checkin.equals(checkout) || !checkout.isAfter(checkin))
-            throw new ReservationDatesMismatch("You can't use these dates");
-
-        if(isRoomOccupied(newReservation))
-            throw new RoomOccupiedException("The room is already used in that period");
-        return reservationRepository.save(newReservation);
-    }
-
-    private boolean isRoomOccupied(Reservation newReservation) {
+    private static boolean checkOverlapping(List<Reservation> existingReservations, Reservation newReservation) {
         LocalDate newCheckIn = newReservation.getCheckin();
         LocalDate newCheckOut = newReservation.getCheckout();
-
-        List<Reservation> existingReservations = reservationRepository.findByRoom(newReservation.getRoom());
 
         for (Reservation existingRes : existingReservations) {
             LocalDate existingCheckIn = existingRes.getCheckin();
@@ -73,6 +57,40 @@ public class ReservationService {
         }
 
         return false;
+    }
+
+    @Transactional
+    public Reservation reserveRoom(Reservation newReservation) {
+        LocalDate checkin = newReservation.getCheckin();
+        LocalDate checkout = newReservation.getCheckout();
+
+        if(newReservation.getRoom() == null)
+            throw new IllegalArgumentException("Room is null");
+
+        if (newReservation.getGuest() == null)
+            throw new IllegalArgumentException("Guest is null");
+
+        if (checkin.equals(checkout) || !checkout.isAfter(checkin))
+            throw new ReservationDatesMismatch("You can't use these dates");
+
+        if (isGuestOccupied(newReservation))
+            throw new GuestOccupiedException("The guest is already booked in that period");
+
+        if(isRoomOccupied(newReservation))
+            throw new RoomOccupiedException("The room is already used in that period");
+        return reservationRepository.save(newReservation);
+    }
+
+    private boolean isRoomOccupied(Reservation newReservation) {
+        List<Reservation> existingReservations = reservationRepository.findByRoom(newReservation.getRoom());
+
+        return checkOverlapping(existingReservations, newReservation);
+    }
+
+    private boolean isGuestOccupied(Reservation newReservation) {
+        List<Reservation> existingReservations = reservationRepository.findByGuest(newReservation.getGuest());
+
+        return checkOverlapping(existingReservations, newReservation);
     }
 
     @Transactional
