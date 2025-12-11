@@ -16,7 +16,7 @@ public class AdminController {
         this.adminService = adminService;
     }
 
-    @PreAuthorize("hasRole('OWNER') and isAuthenticated()")
+    @PreAuthorize("hasAnyRole('OWNER','RECEPTIONIST') and isAuthenticated()")
     @PostMapping
     public ResponseEntity<?> registerAdmin(@RequestBody Admin admin) {
         Admin newAdmin = adminService.addAdmin(admin);
