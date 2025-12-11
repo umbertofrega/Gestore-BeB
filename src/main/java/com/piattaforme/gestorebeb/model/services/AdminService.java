@@ -2,7 +2,7 @@ package com.piattaforme.gestorebeb.model.services;
 
 import com.piattaforme.gestorebeb.model.entities.Admin;
 import com.piattaforme.gestorebeb.model.enums.AdminRole;
-import com.piattaforme.gestorebeb.model.exceptions.conflict.EmailAlreadyExists;
+import com.piattaforme.gestorebeb.model.exceptions.conflict.EmailAlreadyExistsException;
 import com.piattaforme.gestorebeb.model.exceptions.forbidden.InsufficientRoleException;
 import com.piattaforme.gestorebeb.model.repositories.AdminRepository;
 import org.springframework.security.core.Authentication;
@@ -28,7 +28,7 @@ public class AdminService {
             throw new IllegalArgumentException("The new admin can't be null");
 
         if(adminRepository.existsByEmail(newAdmin.getEmail()))
-            throw new EmailAlreadyExists("Used email");
+            throw new EmailAlreadyExistsException("Used email");
 
         return adminRepository.save(newAdmin);
     }

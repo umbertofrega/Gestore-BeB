@@ -3,7 +3,7 @@ package com.piattaforme.gestorebeb.model.services;
 import com.piattaforme.gestorebeb.model.entities.Guest;
 import com.piattaforme.gestorebeb.model.entities.Reservation;
 import com.piattaforme.gestorebeb.model.entities.Room;
-import com.piattaforme.gestorebeb.model.exceptions.conflict.EmailAlreadyExists;
+import com.piattaforme.gestorebeb.model.exceptions.conflict.EmailAlreadyExistsException;
 import com.piattaforme.gestorebeb.model.exceptions.notFound.UserNotFoundException;
 import com.piattaforme.gestorebeb.model.repositories.GuestRepository;
 import org.springframework.security.core.Authentication;
@@ -29,7 +29,7 @@ public class GuestService {
     public Guest addGuest(Guest guest) {
         if (guest != null && !guestRepository.existsByEmail(guest.getEmail()))
             return guestRepository.save(guest);
-        throw new EmailAlreadyExists("Guest already exists");
+        throw new EmailAlreadyExistsException("Guest already exists");
     }
 
     @Transactional(readOnly = true)
