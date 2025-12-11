@@ -30,10 +30,7 @@ public class AdminService {
         if(adminRepository.existsByEmail(newAdmin.getEmail()))
             throw new EmailAlreadyExists("Used email");
 
-
-        if (isRealOwner())
-            return adminRepository.save(newAdmin);
-        throw new InsufficientRoleException("Only the owner can do this operation, you are not the owner");
+        return adminRepository.save(newAdmin);
     }
 
     @Transactional(readOnly = true)
