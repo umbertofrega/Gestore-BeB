@@ -47,7 +47,7 @@ public class ReservationController {
     @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
     @GetMapping("/search")
     public ResponseEntity<?> getOnlyPending() {
-        List<Reservation> reservations = reservationService.searchReservationAdvanced();
+        List<Reservation> reservations = reservationService.searchReservationsPending();
         return new ResponseEntity<>(reservations, HttpStatus.OK);
     }
 

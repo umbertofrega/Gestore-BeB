@@ -25,7 +25,7 @@ public class RoomService {
     @Transactional
     public Room addRoom(Room room) {
         if (room == null) throw new IllegalArgumentException("Room must not be null");
-        if (roomRepository.existsRoomByNumber(room.getNumber()))
+        if (roomRepository.existsRoomByNumberAndState(room.getNumber(), RoomState.AVAILABLE))
             throw new RoomAlreadyExistsException("The room alredy exists");
 
         return roomRepository.save(room);
@@ -33,12 +33,15 @@ public class RoomService {
 
     @Transactional
     public Room updateRoom(int roomNumber, Room room) {
-        if (room == null) throw new IllegalArgumentException();
+        if (room == null) throw new IllegalArgumentException("Room must not be null");
         if (room.getNumber() != roomNumber) {
-            throw new RoomMismatchException("Room ID mismatch, you cant change the room number");
+            throw new RoomMismatchException("Room ID mismatch, you can't change the room number");
         }
+        room.setState(RoomState.AVAILABLE);
+
         if (roomRepository.existsRoomByNumber(roomNumber))
             return roomRepository.save(room);
+
         throw new RoomNotFoundException("The Room does not exist");
     }
 
@@ -49,19 +52,6 @@ public class RoomService {
 
         room.setState(RoomState.HIDDEN);
         return roomRepository.save(room);
-    }
-
-    @Transactional
-    public Room changeState(int roomNumber, RoomState newState) {
-        if (roomRepository.existsRoomByNumber(roomNumber)) {
-            Room room = roomRepository.getRoomByNumber(roomNumber);
-            if (room.getState().equals(newState)) {
-                return room;
-            }
-            room.setState(newState);
-            return roomRepository.save(room);
-        }
-        throw new RoomNotFoundException("The Room does not exist");
     }
 
     @Transactional(readOnly = true)

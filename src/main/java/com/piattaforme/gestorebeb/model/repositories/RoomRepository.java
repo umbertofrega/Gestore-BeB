@@ -25,4 +25,6 @@ public interface RoomRepository extends JpaRepository<Room,Integer> {
     List<Room> getAvaliable(@Param("checkin") LocalDate checkIn, @Param("checkout") LocalDate checkOut);
 
     Room getRoomByNumberAndState(int number, RoomState state);
+
+    boolean existsRoomByNumberAndState(int number, RoomState state);
 }

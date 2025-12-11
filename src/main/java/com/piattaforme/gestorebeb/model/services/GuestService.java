@@ -27,7 +27,9 @@ public class GuestService {
 
     @Transactional
     public Guest addGuest(Guest guest) {
-        if (guest != null && !guestRepository.existsByEmail(guest.getEmail()))
+        if (guest == null) throw new IllegalArgumentException("Guest must not be null");
+
+        if (guestRepository.existsByEmail(guest.getEmail()))
             return guestRepository.save(guest);
         throw new EmailAlreadyExistsException("Guest already exists");
     }

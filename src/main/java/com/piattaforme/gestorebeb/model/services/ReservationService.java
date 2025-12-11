@@ -4,7 +4,7 @@ package com.piattaforme.gestorebeb.model.services;
 import com.piattaforme.gestorebeb.model.entities.Reservation;
 import com.piattaforme.gestorebeb.model.enums.PaymentStatus;
 import com.piattaforme.gestorebeb.model.exceptions.conflict.GuestOccupiedException;
-import com.piattaforme.gestorebeb.model.exceptions.conflict.ReservationDatesMismatch;
+import com.piattaforme.gestorebeb.model.exceptions.conflict.ReservationDatesMismatchException;
 import com.piattaforme.gestorebeb.model.exceptions.conflict.RoomOccupiedException;
 import com.piattaforme.gestorebeb.model.exceptions.forbidden.ReservationCancellationDeadlineException;
 import com.piattaforme.gestorebeb.model.exceptions.notFound.ReservationNotFoundException;
@@ -77,7 +77,7 @@ public class ReservationService {
             throw new IllegalArgumentException("Guest is null");
 
         if (checkin.equals(checkout) || !checkout.isAfter(checkin))
-            throw new ReservationDatesMismatch("You can't use these dates");
+            throw new ReservationDatesMismatchException("You can't use these dates");
 
         if (isGuestOccupied(newReservation))
             throw new GuestOccupiedException("The guest is already booked in that period");
@@ -126,7 +126,7 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
-    public List<Reservation> searchReservationAdvanced() {
+    public List<Reservation> searchReservationsPending() {
         List<Reservation> reservations = reservationRepository.findByPaymentStatus(PaymentStatus.PENDING);
         return sortByMostRecent(reservations);
     }

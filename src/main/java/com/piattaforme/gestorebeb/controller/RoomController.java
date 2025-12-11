@@ -1,7 +1,6 @@
 package com.piattaforme.gestorebeb.controller;
 
 import com.piattaforme.gestorebeb.model.entities.Room;
-import com.piattaforme.gestorebeb.model.enums.RoomState;
 import com.piattaforme.gestorebeb.model.services.RoomService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,12 +64,6 @@ public class RoomController {
         return new ResponseEntity<>(room, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
-    @PutMapping(value = "/{room_number}/state")
-    public ResponseEntity<?> updateState(@PathVariable("room_number") int roomNumber, @RequestBody RoomState newState) {
-        Room newRoom = roomService.changeState(roomNumber,newState);
-        return new ResponseEntity<>(newRoom, HttpStatus.OK);
-    }
 
     //Delete
     @PreAuthorize("hasRole('RECEPTIONIST') or hasRole('OWNER')")
