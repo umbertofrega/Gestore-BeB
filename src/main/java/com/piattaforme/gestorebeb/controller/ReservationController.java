@@ -62,7 +62,8 @@ public class ReservationController {
     //Delete
     @DeleteMapping("/{reservationId}")
     public ResponseEntity<?> deleteReservation(@PathVariable int reservationId) {
-        Reservation reservation = reservationService.deleteReservation(reservationId);
+        Reservation reservation = reservationService.findById(reservationId);
+        reservationService.deleteReservation(reservationId);
         emailService.sendCancellationConfirmation(reservation);
         return new ResponseEntity<>(reservation, HttpStatus.OK);
     }
