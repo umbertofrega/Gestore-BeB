@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -64,7 +65,12 @@ public class RoomService {
 
     @Transactional(readOnly = true)
     public List<Room> getAll() {
-        return roomRepository.findByStateNot(RoomState.HIDDEN);
+        Comparator<Room> comparator = Comparator.comparingInt(Room::getNumber);
+
+        List<Room> rooms = new ArrayList<>(roomRepository.findByStateNot(RoomState.HIDDEN));
+        rooms.sort(comparator);
+
+        return rooms;
     }
 
     public List<Room> searchRoomsAdvanced(LocalDate checkIn, LocalDate checkOut, int minGuests, double maxPrice, int minSize) {
