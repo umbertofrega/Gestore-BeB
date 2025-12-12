@@ -30,7 +30,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable) //disabilita cookie
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Usa la config definita sotto
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/api/rooms/**").permitAll()
@@ -59,6 +59,7 @@ public class SecurityConfiguration {
         return source;
     }
 
+    //Permette di usare il pre autorize
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
@@ -77,7 +78,7 @@ public class SecurityConfiguration {
 
             return roles.stream()
                     .filter(role -> role instanceof String)
-                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role)) // Es: ROLE_admin
+                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                     .collect(Collectors.toList());
         });
         return converter;
